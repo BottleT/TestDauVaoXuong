@@ -53,6 +53,11 @@
                                     <a th:href="@{/api/other-form}" class="btn btn-sm btn-secondary ms-1">
                                         <i class="fas fa-external-link-alt"></i> Chức vụ
                                     </a>
+                                    <a th:href="@{/api/delete/{id}(id=${staff.id})}"
+                                       class="btn btn-sm btn-danger ms-1"
+                                       onclick="return confirm('Bạn có chắc muốn xóa nhân viên này không?')">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </a>
                                 </div>
                             </td>
                         </tr>

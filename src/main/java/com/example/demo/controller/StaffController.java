@@ -64,4 +64,11 @@ public class StaffController {
         staffService.toggleStaffStatus(id);
         return "redirect:/api/home";
     }
+
+    @GetMapping("/delete/{id}")
+    public String deleteStaff(@PathVariable UUID id) {
+        staffService.deleteStaff(id);
+        return "redirect:/api/home";
+    }
+
 }

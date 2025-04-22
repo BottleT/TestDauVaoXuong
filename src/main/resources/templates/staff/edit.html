@@ -18,41 +18,38 @@
 
         <div class="card">
             <div class="card-body">
-                <form th:action="@{/api/update}" th:object="${staff}" method="post">
+                <form th:action="@{/api/update}" th:object="${staff}" method="post" id="editStaffForm">
                     <input type="hidden" th:field="*{id}" />
                     <input type="hidden" th:field="*{createdDate}" />
 
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Mã nhân viên</label>
                         <div class="col-sm-10">
-                            <input type="text" th:field="*{staffCode}" class="form-control" required>
+                            <input type="text" th:field="*{staffCode}" class="form-control" id="staffCode">
+                            <small class="text-danger error-message" id="errorStaffCode"></small>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Họ tên</label>
                         <div class="col-sm-10">
-                            <input type="text" th:field="*{name}" class="form-control" required>
+                            <input type="text" th:field="*{name}" class="form-control" id="name">
+                            <small class="text-danger error-message" id="errorName"></small>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Email FPT</label>
                         <div class="col-sm-10">
-                            <input type="email" th:field="*{accountFpt}" class="form-control" required>
+                            <input type="email" th:field="*{accountFpt}" class="form-control" id="emailFpt">
+                            <small class="text-danger error-message" id="errorFpt"></small>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Email FE</label>
                         <div class="col-sm-10">
-                            <input type="email" th:field="*{accountFe}" class="form-control" required>
+                            <input type="email" th:field="*{accountFe}" class="form-control" id="emailFe">
+                            <small class="text-danger error-message" id="errorFe"></small>
                         </div>
                     </div>
-<!--                    <div class="mb-3 row">-->
-<!--                        <label class="col-sm-2 col-form-label">Trạng thái</label>-->
-<!--                        <div class="col-sm-10">-->
-<!--                            <input type="text" th:value="${staff.status == 1 ? 'Hoạt động' : 'Không hoạt động'}" class="form-control" disabled />-->
-<!--                            <input type="hidden" th:field="*{status}" />-->
-<!--                        </div>-->
-<!--                    </div>-->
                     <input type="hidden" th:field="*{status}" />
 
                     <div class="text-center">
@@ -71,8 +68,67 @@
 <script th:inline="javascript">
     document.getElementById("btnSave").addEventListener("click", function (event) {
         event.preventDefault();
-        if (confirm("Bạn có chắc chắn muốn lưu thay đổi không?")) {
-            event.target.closest("form").submit();
+
+        // Reset all error messages
+        const errorMessages = document.querySelectorAll(".error-message");
+        errorMessages.forEach(element => {
+            element.textContent = "";
+        });
+
+        // Get form fields
+        const staffCode = document.getElementById("staffCode").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const emailFpt = document.getElementById("emailFpt").value.trim();
+        const emailFe = document.getElementById("emailFe").value.trim();
+
+        // Error message elements
+        const errorStaffCode = document.getElementById("errorStaffCode");
+        const errorName = document.getElementById("errorName");
+        const errorFpt = document.getElementById("errorFpt");
+        const errorFe = document.getElementById("errorFe");
+
+        let isValid = true;
+
+        // Check for empty fields
+        if (staffCode === "") {
+            errorStaffCode.textContent = "Vui lòng nhập mã nhân viên";
+            isValid = false;
+        }
+
+        if (name === "") {
+            errorName.textContent = "Vui lòng nhập họ tên";
+            isValid = false;
+        }
+
+        if (emailFpt === "") {
+            errorFpt.textContent = "Vui lòng nhập email FPT";
+            isValid = false;
+        } else {
+            // Check email format for FPT
+            const regexFpt = /^[a-zA-Z0-9._%+-]+@fpt\.edu\.vn$/;
+            if (!regexFpt.test(emailFpt)) {
+                errorFpt.textContent = "Email FPT phải có định dạng đúng: example@fpt.edu.vn";
+                isValid = false;
+            }
+        }
+
+        if (emailFe === "") {
+            errorFe.textContent = "Vui lòng nhập email FE";
+            isValid = false;
+        } else {
+            // Check email format for FE
+            const regexFe = /^[a-zA-Z0-9._%+-]+@fe\.edu\.vn$/;
+            if (!regexFe.test(emailFe)) {
+                errorFe.textContent = "Email FE phải có định dạng đúng: example@fe.edu.nv";
+                isValid = false;
+            }
+        }
+
+        // If validation passes, show confirmation and submit form
+        if (isValid) {
+            if (confirm("Bạn có chắc chắn muốn lưu thay đổi không?")) {
+                event.target.closest("form").submit();
+            }
         }
     });
 </script>

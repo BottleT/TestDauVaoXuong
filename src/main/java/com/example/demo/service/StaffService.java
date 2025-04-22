@@ -64,4 +64,9 @@ public class StaffService {
         return staffRepository.save(staff);
     }
 
+    public void deleteStaff(UUID id) {
+        Staff staff = getStaffById(id);
+        staffRepository.delete(staff);
+    }
+
 }
