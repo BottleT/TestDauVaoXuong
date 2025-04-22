@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout :: title(~{::title})}">
+        <title>Thêm nhân viên - Hệ thống Quản lý Nhân viên FPT</title>
+    </th:block>
+</head>
+<body>
+<th:block th:replace="~{layout :: content(~{::main})}">
+    <main>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Thêm nhân viên mới</h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/api/save}" th:object="${staff}" method="post">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Mã nhân viên</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:field="*{staffCode}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Họ tên</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:field="*{name}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Email FPT</label>
+                        <div class="col-sm-10">
+                            <input type="email" th:field="*{accountFpt}" class="form-control" id="emailFpt" required>
+                            <small class="text-danger" id="errorFpt"></small>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Email FE</label>
+                        <div class="col-sm-10">
+                            <input type="email" th:field="*{accountFe}" class="form-control" id="emailFe" required>
+                            <small class="text-danger" id="errorFe"></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Trạng thái</label>
+                        <div class="col-sm-10">
+                            <select th:field="*{status}" class="form-select">
+                                <option value="1">Hoạt động</option>
+                                <option value="0">Không hoạt động</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu
+                        </button>
+                        <a th:href="@{/api/home}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</th:block>
+<script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const emailFpt = document.getElementById("emailFpt").value.trim();
+        const emailFe = document.getElementById("emailFe").value.trim();
+        const errorFpt = document.getElementById("errorFpt");
+        const errorFe = document.getElementById("errorFe");
+
+        let isValid = true;
+        errorFpt.textContent = "";
+        errorFe.textContent = "";
+
+        const regexFpt = /^[a-zA-Z0-9._%+-]+@fpt\.edu\.vn$/;
+        const regexFe = /^[a-zA-Z0-9._%+-]+@fe\.edu\.nv$/;
+
+        if (!regexFpt.test(emailFpt)) {
+            errorFpt.textContent = "Email FPT phải có định dạng đúng: example@fpt.edu.vn";
+            isValid = false;
+        }
+
+        if (!regexFe.test(emailFe)) {
+            errorFe.textContent = "Email FE phải có định dạng đúng: example@fe.edu.nv";
+            isValid = false;
+        }
+
+        if (!isValid) e.preventDefault();
+    });
+</script>
+</body>
+</html>

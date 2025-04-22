@@ -26,7 +26,7 @@ import java.util.UUID;
 
 public class Staff {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "status")

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout :: title(~{::title})}">
+        <title>Cập nhật nhân viên - Hệ thống Quản lý Nhân viên FPT</title>
+    </th:block>
+</head>
+<body>
+<th:block th:replace="~{layout :: content(~{::main})}">
+    <main>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Cập nhật thông tin nhân viên</h2>
+            <a th:href="@{/api/home}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/api/update}" th:object="${staff}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{createdDate}" />
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Mã nhân viên</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:field="*{staffCode}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Họ tên</label>
+                        <div class="col-sm-10">
+                            <input type="text" th:field="*{name}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Email FPT</label>
+                        <div class="col-sm-10">
+                            <input type="email" th:field="*{accountFpt}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Email FE</label>
+                        <div class="col-sm-10">
+                            <input type="email" th:field="*{accountFe}" class="form-control" required>
+                        </div>
+                    </div>
+<!--                    <div class="mb-3 row">-->
+<!--                        <label class="col-sm-2 col-form-label">Trạng thái</label>-->
+<!--                        <div class="col-sm-10">-->
+<!--                            <input type="text" th:value="${staff.status == 1 ? 'Hoạt động' : 'Không hoạt động'}" class="form-control" disabled />-->
+<!--                            <input type="hidden" th:field="*{status}" />-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <input type="hidden" th:field="*{status}" />
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" id="btnSave">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                        <a th:href="@{/api/home}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</th:block>
+<script th:inline="javascript">
+    document.getElementById("btnSave").addEventListener("click", function (event) {
+        event.preventDefault();
+        if (confirm("Bạn có chắc chắn muốn lưu thay đổi không?")) {
+            event.target.closest("form").submit();
+        }
+    });
+</script>
+</body>
+</html>
