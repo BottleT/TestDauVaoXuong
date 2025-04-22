@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{layout :: title(~{::title})}">
+        <title>Quản lý Bộ môn Chuyên ngành - Hệ thống Quản lý Nhân viên FPT</title>
+    </th:block>
+</head>
+<body>
+<th:block th:replace="~{layout :: content(~{::main})}">
+    <main>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Quản lý Bộ môn Chuyên ngành</h2>
+            <a th:href="@{/api/home}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thông tin Nhân viên</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p><strong>Mã nhân viên:</strong> <span th:text="${staff.staffCode}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Họ tên:</strong> <span th:text="${staff.name}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Email FPT:</strong> <span th:text="${staff.accountFpt}"></span></p>
+                    </div>
+                    <div class="col-md-3">
+                        <p><strong>Email FE:</strong> <span th:text="${staff.accountFe}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Bộ môn Chuyên ngành hiện tại</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Cơ sở</th>
+                            <th>Bộ môn</th>
+                            <th>Chuyên ngành</th>
+                            <th>Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody id="staffMajorsTableBody">
+                        <tr th:if="${staffMajors.empty}">
+                            <td colspan="5" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                        <tr th:each="majorAssignment, i : ${staffMajors}">
+                            <td th:text="${i.index + 1}"></td>
+                            <td th:text="${majorAssignment.majorFacility.departmentFacility.facility.name}"></td>
+                            <td th:text="${majorAssignment.majorFacility.departmentFacility.department.name}"></td>
+                            <td th:text="${majorAssignment.majorFacility.major.name}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-danger delete-major"
+                                        th:data-id="${majorAssignment.id}">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Thêm Bộ môn Chuyên ngành mới</h5>
+            </div>
+            <div class="card-body">
+                <form id="addMajorForm">
+                    <input type="hidden" id="staffId" th:value="${staff.id}">
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Cơ sở</label>
+                        <div class="col-sm-10">
+                            <select id="facilitySelect" class="form-select" required>
+                                <option value="">-- Chọn Cơ sở --</option>
+                                <option th:each="facility : ${facilities}"
+                                        th:value="${facility.id}"
+                                        th:text="${facility.name}"></option>
+                            </select>
+                            <small class="text-danger" id="facilityError"></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Bộ môn</label>
+                        <div class="col-sm-10">
+                            <select id="departmentSelect" class="form-select" required disabled>
+                                <option value="">-- Chọn Bộ môn --</option>
+                            </select>
+                            <small class="text-danger" id="departmentError"></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Chuyên ngành</label>
+                        <div class="col-sm-10">
+                            <select id="majorSelect" class="form-select" required disabled>
+                                <option value="">-- Chọn Chuyên ngành --</option>
+                            </select>
+                            <small class="text-danger" id="majorError"></small>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" id="btnSaveMajor">
+                            <i class="fas fa-save"></i> Lưu
+                        </button>
+                        <button type="reset" class="btn btn-secondary" id="btnReset">
+                            <i class="fas fa-undo"></i> Làm mới
+                        </button>
+                    </div>
+                </form>
+                <div class="alert alert-danger mt-3" id="formError" style="display: none;"></div>
+                <div class="alert alert-success mt-3" id="formSuccess" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+</th:block>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const facilitySelect = document.getElementById('facilitySelect');
+        const departmentSelect = document.getElementById('departmentSelect');
+        const majorSelect = document.getElementById('majorSelect');
+        const staffId = document.getElementById('staffId').value;
+        const formError = document.getElementById('formError');
+        const formSuccess = document.getElementById('formSuccess');
+        const facilityError = document.getElementById('facilityError');
+        const departmentError = document.getElementById('departmentError');
+        const majorError = document.getElementById('majorError');
+
+        function resetForm() {
+            facilitySelect.value = '';
+            departmentSelect.innerHTML = '<option value="">-- Chọn Bộ môn --</option>';
+            departmentSelect.disabled = true;
+            majorSelect.innerHTML = '<option value="">-- Chọn Chuyên ngành --</option>';
+            majorSelect.disabled = true;
+            formError.style.display = 'none';
+            formSuccess.style.display = 'none';
+            facilityError.textContent = '';
+            departmentError.textContent = '';
+            majorError.textContent = '';
+        }
+
+        facilitySelect.addEventListener('change', function() {
+            const facilityId = this.value;
+            departmentSelect.innerHTML = '<option value="">-- Chọn Bộ môn --</option>';
+            majorSelect.innerHTML = '<option value="">-- Chọn Chuyên ngành --</option>';
+            majorSelect.disabled = true;
+
+            if (facilityId) {
+                departmentSelect.disabled = false;
+
+                fetch(`/api/staff-major/departments?facilityId=${facilityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            data.forEach(dept => {
+                                const option = document.createElement('option');
+                                option.value = dept.id;
+                                option.textContent = dept.department.name;
+                                departmentSelect.appendChild(option);
+                            });
+                        } else {
+                            departmentSelect.innerHTML = '<option value="">Không có bộ môn</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching departments:', error);
+                        departmentSelect.innerHTML = '<option value="">Lỗi khi tải dữ liệu</option>';
+                    });
+            } else {
+                departmentSelect.disabled = true;
+            }
+        });
+
+        departmentSelect.addEventListener('change', function() {
+            const departmentFacilityId = this.value;
+            majorSelect.innerHTML = '<option value="">-- Chọn Chuyên ngành --</option>';
+
+            if (departmentFacilityId) {
+                majorSelect.disabled = false;
+
+                fetch(`/api/staff-major/majors?departmentFacilityId=${departmentFacilityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            data.forEach(major => {
+                                const option = document.createElement('option');
+                                option.value = major.id;
+                                option.textContent = major.major.name;
+                                majorSelect.appendChild(option);
+                            });
+                        } else {
+                            majorSelect.innerHTML = '<option value="">Không có chuyên ngành</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching majors:', error);
+                        majorSelect.innerHTML = '<option value="">Lỗi khi tải dữ liệu</option>';
+                    });
+            } else {
+                majorSelect.disabled = true;
+            }
+        });
+
+        document.getElementById('addMajorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            formError.style.display = 'none';
+            formSuccess.style.display = 'none';
+            facilityError.textContent = '';
+            departmentError.textContent = '';
+            majorError.textContent = '';
+
+            let isValid = true;
+
+            if (!facilitySelect.value) {
+                facilityError.textContent = 'Vui lòng chọn cơ sở';
+                isValid = false;
+            }
+
+            if (!departmentSelect.value) {
+                departmentError.textContent = 'Vui lòng chọn bộ môn';
+                isValid = false;
+            }
+
+            if (!majorSelect.value) {
+                majorError.textContent = 'Vui lòng chọn chuyên ngành';
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            const majorFacilityId = majorSelect.value;
+
+            fetch('/api/staff-major/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    staffId: staffId,
+                    majorFacilityId: majorFacilityId
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                    return response.text();
+                })
+                .then(message => {
+                    formSuccess.textContent = message;
+                    formSuccess.style.display = 'block';
+                    resetForm();
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                })
+                .catch(error => {
+                    formError.textContent = error.message;
+                    formError.style.display = 'block';
+                });
+        });
+
+        document.getElementById('btnReset').addEventListener('click', function() {
+            resetForm();
+        });
+
+        document.querySelectorAll('.delete-major').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+
+                if (confirm('Bạn có chắc chắn muốn xóa bộ môn chuyên ngành này?')) {
+                    fetch(`/api/staff-major/delete/${id}`, {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text) });
+                            }
+                            return response.text();
+                        })
+                        .then(message => {
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            alert('Lỗi: ' + error.message);
+                        });
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

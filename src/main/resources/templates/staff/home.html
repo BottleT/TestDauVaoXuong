@@ -50,8 +50,8 @@
                                     <a th:href="@{/api/toggle-status/{id}(id=${staff.id})}" class="btn btn-sm btn-info ms-1">
                                         <i class="fas fa-exchange-alt"></i> Đổi trạng thái
                                     </a>
-                                    <a th:href="@{/api/other-form}" class="btn btn-sm btn-secondary ms-1">
-                                        <i class="fas fa-external-link-alt"></i> Chức vụ
+                                    <a th:href="@{/api/staff-major/{id}(id=${staff.id})}" class="btn btn-sm btn-secondary ms-1">
+                                        <i class="fas fa-briefcase"></i> Quản lý bộ môn
                                     </a>
                                     <a th:href="@{/api/delete/{id}(id=${staff.id})}"
                                        class="btn btn-sm btn-danger ms-1"
