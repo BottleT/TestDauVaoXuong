@@ -69,19 +69,16 @@
 </th:block>
 <script>
     document.getElementById("staffForm").addEventListener("submit", function (e) {
-        // Reset all error messages
         const errorMessages = document.querySelectorAll(".error-message");
         errorMessages.forEach(element => {
             element.textContent = "";
         });
 
-        // Get form fields
         const staffCode = document.getElementById("staffCode").value.trim();
         const name = document.getElementById("name").value.trim();
         const emailFpt = document.getElementById("emailFpt").value.trim();
         const emailFe = document.getElementById("emailFe").value.trim();
 
-        // Error message elements
         const errorStaffCode = document.getElementById("errorStaffCode");
         const errorName = document.getElementById("errorName");
         const errorFpt = document.getElementById("errorFpt");
@@ -89,7 +86,6 @@
 
         let isValid = true;
 
-        // Check for empty fields
         if (staffCode === "") {
             errorStaffCode.textContent = "Vui lòng nhập mã nhân viên";
             isValid = false;
@@ -104,7 +100,6 @@
             errorFpt.textContent = "Vui lòng nhập email FPT";
             isValid = false;
         } else {
-            // Check email format for FPT
             const regexFpt = /^[a-zA-Z0-9._%+-]+@fpt\.edu\.vn$/;
             if (!regexFpt.test(emailFpt)) {
                 errorFpt.textContent = "Email FPT phải có định dạng đúng: example@fpt.edu.vn";
@@ -116,7 +111,6 @@
             errorFe.textContent = "Vui lòng nhập email FE";
             isValid = false;
         } else {
-            // Check email format for FE
             const regexFe = /^[a-zA-Z0-9._%+-]+@fe\.edu\.nv$/;
             if (!regexFe.test(emailFe)) {
                 errorFe.textContent = "Email FE phải có định dạng đúng: example@fe.edu.nv";
@@ -124,7 +118,6 @@
             }
         }
 
-        // Prevent form submission if validation fails
         if (!isValid) {
             e.preventDefault();
         }
